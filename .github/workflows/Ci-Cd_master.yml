@@ -1,0 +1,141 @@
+name: Build and Deploy
+
+on:
+  workflow_dispatch: {}
+
+env:
+  applicationfolder: Build a debug versions of the app
+  AWS_REGION: us-east-1
+  AWS_S3_BUCKET: gitaction-CI-CD-build 
+
+jobs:
+  build:
+    name: Build and Package
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout Repository
+    
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+      
+      - name: Restore dependencies
+        run: dotnet restore
+      
+      - name: Build
+        run: dotnet build -c debug --no-restore
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+
+      - name: chmod
+        run: chmod -R +x ./.github
+
+      - name: Upload Artifact to s3
+        working-directory: ${{ env.applicationfolder }}/target
+        run: aws s3 cp *.war s3://${{ env.AWS_S3_BUCKET }}/
+
+      - name: Install zip
+        uses: montudor/action-zip@v1
+
+      - name: Zip output
+        run: zip -qq -r helloworld.zip bin/release/net3.1
+
+      - name: Upload to S3 
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --exclude '*' --include 'helloworld.zip' 
+        env:
+          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+
+  release-build:
+    needs: build
+    name: Build a release versions of the app
+    environment:
+      name: release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+      
+      - name: Restore dependencies
+        run: dotnet restore
+      
+      - name: Build
+        run: dotnet build -c release --no-restore
+
+      - name: Upload the release build artifact
+        uses: actions/upload-artifact@v2.2.2
+        with:
+          # Artifact name
+          name: HelloWorldRelease #.zip will be added automatically
+          path: ./bin/release/net3.1/*.*
+ 
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+
+      - name: chmod
+        run: chmod -R +x ./.github
+
+      - name: Upload Artifact to s3
+        working-directory: ${{ env.applicationfolder }}/target
+        run: aws s3 cp *.war s3://${{ env.AWS_S3_BUCKET }}/
+
+      - name: Install zip
+        uses: montudor/action-zip@v1
+
+      - name: Zip output
+        run: zip -qq -r helloworld.zip bin/release/net3.1
+
+      - name: Upload to S3 
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --exclude '*' --include 'helloworld.zip' 
+        env:
+          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: Dev
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - uses: actions/checkout@v2
+    - uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
+        role-session-name: GitHub-Action-Role
+        aws-region: ${{ env.AWS_REGION }}
+    - run: |
+        echo "Deploying branch ${{ env.GITHUB_REF }} to ${{ github.event.inputs.environment }}"
+       # commit_hash=`git rev-parse HEAD`
+       # aws deploy create-deployment --application-name CodeDeployAppNameWithASG --deployment-group-name CodeDeployGroupName --github-location repository=$GITHUB_REPOSITORY,commitId=$commit_hash --ignore-application-stop-failures
+    - name: Deploy lambda function
+      run: sls deploy
