@@ -4,9 +4,9 @@ on:
   workflow_dispatch: {}
 
 env:
-  applicationfolder: Build a debug versions of the app
+  applicationfolder: Upload-Artifact-to-s3
   AWS_REGION: us-east-1
-  AWS_S3_BUCKET: gitaction-CI-CD-build 
+  AWS_S3_BUCKET: git-action-ci-cd-build
 
 jobs:
   build:
@@ -37,8 +37,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ env.AWS_REGION }}
 
-      - name: chmod
-        run: chmod -R +x ./.github
+#       - name: chmod
+#         run: chmod -R +x ./.github
 
       - name: Upload Artifact to s3
         working-directory: ${{ env.applicationfolder }}/target
@@ -49,20 +49,14 @@ jobs:
 
       - name: Zip output
         run: zip -qq -r helloworld.zip bin/release/net3.1
+            
+      - name: Upload to S3
+        run: aws s3 cp ${{ github.run_id }}.zip s3://${{ env.AWS_S3_BUCKET }}/${{ github.run_id }}.zip
 
-      - name: Upload to S3 
-        uses: Andaj047/ci-cd-3@master
-        with:
-          args: --acl public-read --follow-symlinks --exclude '*' --include 'helloworld.zip' 
-        env:
-          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ env.AWS_REGION }}
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment: Dev
+    environment: master
     permissions:
       id-token: write
       contents: read
@@ -70,12 +64,19 @@ jobs:
     - uses: actions/checkout@v2
     - uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
-        role-session-name: GitHub-Action-Role
-        aws-region: ${{ env.AWS_REGION }}
-    - run: |
+          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+    - run: | 
         echo "Deploying branch ${{ env.GITHUB_REF }} to ${{ github.event.inputs.environment }}"
-       # commit_hash=`git rev-parse HEAD`
-       # aws deploy create-deployment --application-name CodeDeployAppNameWithASG --deployment-group-name CodeDeployGroupName --github-location repository=$GITHUB_REPOSITORY,commitId=$commit_hash --ignore-application-stop-failures
-    - name: Deploy lambda function
-      run: sls deploy
+        aws lambda update-function-code --function-name git-test-function --s3-bucket ${{ env.AWS_S3_BUCKET }} --s3-key ${{ github.run_id }}.zip
+
+    - name: Sleep for 5 seconds
+      run: sleep 5s
+      shell: bash
+
+    - name: Release lambda function version
+      run: |
+        echo "Deploying branch ${{ env.GITHUB_REF }} to ${{ github.event.inputs.environment }}"
+        aws lambda publish-version --function-name git-test-function --description ${{ github.run_id }}
