@@ -1,7 +1,11 @@
 name: Build and Deploy
 
 on:
-    workflow_dispatch: {}
+  push:
+    branches:    
+      - Dev
+# on:
+#     workflow_dispatch: {}
 
 env:
   applicationfolder: /
