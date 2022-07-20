@@ -36,10 +36,12 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v1
         with:
+          aws-region: us-east-2
+          role-to-assume: arn:aws:iam::967774776559:role/service-role/git-test-function-role-2up44wpu
+          role-session-name: AssumeRole
           AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ env.AWS_REGION }}
 
 #       - name: chmod
 #         run: chmod -R +x ./.github
@@ -68,10 +70,12 @@ jobs:
     - uses: actions/checkout@v2
     - uses: aws-actions/configure-aws-credentials@v1
       with:
+          aws-region: us-east-2
+          role-to-assume: arn:aws:iam::967774776559:role/service-role/git-test-function-role-2up44wpu
+          role-session-name: AssumeRole
           AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ env.AWS_REGION }}
     - run: | 
         echo "Deploying branch ${{ env.GITHUB_REF }} to ${{ github.event.inputs.environment }}"
         aws lambda update-function-code --function-name git-test-function --s3-bucket ${{ env.AWS_S3_BUCKET }} --s3-key ${{ github.run_id }}.zip
