@@ -36,10 +36,10 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v1
         with:
-#           aws-region: ${{env.AWS_REGION}}
+          aws-region: ${{env.AWS_REGION}}
 #           role-to-assume: arn:aws:iam::967774776559:role/github-action-access-role
 #           role-session-name: rolesession
-          aws-s3-bucket: ${{ env.AWS_S3_BUCKET }}
+#           aws-s3-bucket: ${{ env.AWS_S3_BUCKET }}
           aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY_ID }}
 
