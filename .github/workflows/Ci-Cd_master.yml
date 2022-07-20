@@ -54,7 +54,7 @@ jobs:
         uses: montudor/action-zip@v1
 
       - name: Zip output
-        run: zip -qq -r helloworld.zip bin/release/netcoreapp3.1
+        run: zip -qq -r helloworld.zip . -i bin/release/netcoreapp3.1
             
       - name: Upload to S3
         run: aws s3 cp ${{ github.run_id }}.zip s3://${{ env.AWS_S3_BUCKET }}/${{ github.run_id }}.zip
