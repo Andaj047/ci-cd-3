@@ -8,7 +8,7 @@ on:
 #     workflow_dispatch: {}
 
 env:
-  applicationfolder: /
+  applicationfolder: src
   AWS_REGION: us-east-1
   AWS_S3_BUCKET: git-action-ci-cd-build
 
@@ -47,7 +47,7 @@ jobs:
 #         run: chmod -R +x ./.github
 
       - name: Upload Artifact to s3
-        working-directory: ${{ env.applicationfolder }}target
+        working-directory: ${{ env.applicationfolder }}/target
         run: aws s3 cp *.war s3://${{ env.AWS_S3_BUCKET }}/
 
       - name: Install zip
