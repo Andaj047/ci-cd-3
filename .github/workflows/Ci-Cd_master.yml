@@ -54,7 +54,7 @@ jobs:
         uses: montudor/action-zip@v1
 
       - name: Zip output
-        run: zip ${{ github.run_id }}.zip bin/release/net3.1
+        run: zip ${{ github.run_id }}.zip 
 #           zip -qq -r helloworld.zip bin/release/net3.1
             
       - name: Upload to S3
