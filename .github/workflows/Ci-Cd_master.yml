@@ -58,7 +58,7 @@ jobs:
 
       - name: Upload Artifact to s3
         working-directory: ${{env.applicationfolder}}/
-        run: aws s3 cp artifacts/${{ github.repository }}/blank-csharp.zip s3://${{ env.AWS_S3_BUCKET }}/
+        run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
             
 #       - name: Upload to S3
 #         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
