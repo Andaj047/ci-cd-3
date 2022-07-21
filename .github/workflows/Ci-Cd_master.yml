@@ -59,13 +59,13 @@ jobs:
 #       - name: Upload Artifact to s3
 #         working-directory: ${{env.applicationfolder}}/
 #         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
-      - uses: shallwefootball/s3-upload-action@master
+      - uses: Andaj047/ci-cd-3@Dev
         name: Upload S3
         id: S3
         with:
-          aws-s3-bucket: ${{ env.AWS_S3_BUCKET }}
-          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY_ID }}
+          aws_bucket: ${{ env.AWS_S3_BUCKET }}
+          aws_key_id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY_ID }}
           source_dir: ${{env.applicationfolder}}
             
 #       - name: Upload to S3
