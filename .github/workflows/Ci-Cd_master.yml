@@ -28,8 +28,10 @@ jobs:
         with:
           dotnet-version: 3.1.x
       
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Dot net dependencies
+        run: |
+          dotnet restore
+          dotnet tool install -g Amazon.Lambda.Tools
       
       - name: Build
         run: dotnet build -c debug --no-restore
