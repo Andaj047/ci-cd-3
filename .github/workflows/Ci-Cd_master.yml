@@ -53,11 +53,10 @@ jobs:
       - name: Create Zip File
         uses: montudor/action-zip@v1
         with:
-          args: zip -r build.zip ./src/blank-csharp
+          args: zip -r src/blank-csharp/bin/Release/netcoreapp3.1/blank-csharp.zip ./src
 
       - name: Upload Artifact to s3
-        working-directory: ${{ env.applicationfolder }}/target
-        run: aws s3 cp . s3://${{ env.AWS_S3_BUCKET }}/
+        run: aws s3 cp src/blank-csharp/bin/Release/netcoreapp3.1/blank-csharp.zip s3://${{ env.AWS_S3_BUCKET }}/
 #       - name: Install zip
 #         uses: montudor/action-zip@v1
 
