@@ -6,5 +6,4 @@ inputs:
     required: true
     description: 'directory to upload'
 runs:
-  using: 'netcoreapp3.1'
   main: 'src/blank-csharp'
