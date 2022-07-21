@@ -8,7 +8,7 @@ on:
 #     workflow_dispatch: {}
 
 env:
-  applicationfolder: './artifacts'
+  applicationfolder: './src/blank-csharp'
   AWS_REGION: us-east-1
   AWS_S3_BUCKET: git-action-ci-cd-build
 
@@ -53,7 +53,7 @@ jobs:
       - name: Create Zip File
         uses: montudor/action-zip@v1
         with:
-          args: zip -r build.zip ./src
+          args: zip -r build.zip ./src/blank-csharp
 
       - name: Upload Artifact to s3
         working-directory: ${{ env.applicationfolder }}/
