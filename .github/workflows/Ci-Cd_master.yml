@@ -29,6 +29,7 @@ jobs:
           dotnet-version: 3.1.x
       
       - name: Dot net dependencies and AWS CLI
+        working-directory: './src/blank-csharp'
         run: |
           dotnet restore
           dotnet tool install -g Amazon.Lambda.Tools
