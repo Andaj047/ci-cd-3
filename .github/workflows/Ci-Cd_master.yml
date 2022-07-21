@@ -57,7 +57,7 @@ jobs:
 
       - name: Upload Artifact to s3
 #         working-directory: 'artifacts'
-        run: aws s3 cp ./src/ s3://${{ env.AWS_S3_BUCKET }}/
+        run: aws s3 cp ./src s3://${{ env.AWS_S3_BUCKET }}/
 #       - name: Install zip
 #         uses: montudor/action-zip@v1
 
