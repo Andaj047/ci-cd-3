@@ -35,6 +35,7 @@ jobs:
           dotnet tool install -g Amazon.Lambda.Tools
       
       - name: Build
+        working-directory: './src/blank-csharp'
         run: dotnet build -c debug --no-restore
 
       - uses: aws-actions/configure-aws-credentials@v1
