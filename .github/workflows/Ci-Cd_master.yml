@@ -6,7 +6,6 @@ on:
       - Dev
 # on:
 #     workflow_dispatch: {}
-
 env:
   applicationfolder: 'src/blank-csharp'
   AWS_REGION: us-east-1
@@ -59,9 +58,8 @@ jobs:
 #       - name: Upload Artifact to s3
 #         working-directory: ${{env.applicationfolder}}/
 #         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
-      - uses: Andaj047/ci-cd-3@Dev
-        name: Upload S3
-        id: S3
+      - name: upload to s3
+        uses: Andaj047/ci-cd-3@Dev
         with:
           aws_bucket: ${{ env.AWS_S3_BUCKET }}
           aws_key_id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
