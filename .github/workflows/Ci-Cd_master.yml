@@ -56,9 +56,17 @@ jobs:
       - name: Create Zip File
         run: zip -r artifacts/${{ github.repository }}/blank-csharp.zip ./src
 
-      - name: Upload Artifact to s3
-        working-directory: ${{env.applicationfolder}}/
-        run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
+#       - name: Upload Artifact to s3
+#         working-directory: ${{env.applicationfolder}}/
+#         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
+      - uses: shallwefootball/s3-upload-action@master
+        name: Upload S3
+        id: S3
+        with:
+          aws-s3-bucket: ${{ env.AWS_S3_BUCKET }}
+          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY_ID }}
+          source_dir: ${{env.applicationfolder}}
             
 #       - name: Upload to S3
 #         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
