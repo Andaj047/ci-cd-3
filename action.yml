@@ -1,9 +1,0 @@
-name: Upload S3
-description: 'Upload directory to S3'
-author: 'Andaj047'
-inputs:
-  source_dir:
-    required: true
-    description: 'directory to upload'
-runs:
-  main: 'src/blank-csharp'
