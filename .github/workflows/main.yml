@@ -1,0 +1,51 @@
+name: Build master
+
+on:
+  push:
+    branches:    
+      - master
+# on:
+#     workflow_dispatch: {}
+env:
+  applicationfolder: 'src/blank-csharp'
+  AWS_REGION: us-east-1
+  AWS_S3_BUCKET: git-action-ci-cd-build
+
+jobs:
+  build:
+    name: Build and Package
+    runs-on: ubuntu-18.04
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout Repository
+    
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+      
+      - name: Dot net dependencies and AWS CLI
+        working-directory: './src/blank-csharp'
+        run: |
+          dotnet restore
+          dotnet tool install -g Amazon.Lambda.Tools
+      
+      - name: Build
+        working-directory: './src/blank-csharp'
+        run: dotnet build -c debug --no-restore
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{env.AWS_REGION}}
+          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY_ID }}
+
+#       - name: chmod
+#         run: chmod -R +x ./.github
+
+      - name: Install zip
+        uses: montudor/action-zip@v1
+        
