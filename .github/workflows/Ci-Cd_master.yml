@@ -46,14 +46,14 @@ jobs:
 #       - name: chmod
 #         run: chmod -R +x ./.github
 
-      - name: Make artifact directory
-        run: mkdir -p artifacts/${{ github.repository }}
+#       - name: Make artifact directory
+#         run: mkdir -p artifacts/${{ github.repository }}
 
       - name: Install zip
         uses: montudor/action-zip@v1
         
       - name: Create Zip File
-        run: zip -r artifacts/${{ github.repository }}/blank-csharp.zip ./src
+        run: zip -r blank-csharp.zip ./src
 
 #       - name: Upload Artifact to s3
 #         working-directory: ${{env.applicationfolder}}/
