@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Deploy in development
 
 on:
   push:
@@ -46,22 +46,9 @@ jobs:
 #       - name: chmod
 #         run: chmod -R +x ./.github
 
-#       - name: Make artifact directory
-#         run: mkdir -p artifacts/${{ github.repository }}
-
       - name: Install zip
         uses: montudor/action-zip@v1
         
-      - name: Create Zip File
-        run: zip -r blank-csharp.zip ./src
-
-#       - name: Upload Artifact to s3
-#         working-directory: ${{env.applicationfolder}}/
-#         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
-            
-      - name: Upload to S3
-        run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
-
   deploy:
     needs: build
     runs-on: ubuntu-18.04
@@ -69,6 +56,12 @@ jobs:
       id-token: write
       contents: read
     steps:
+    - name: Create Zip File
+      run: zip -r blank-csharp.zip ./src
+
+    - name: Upload to S3
+      run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
+      
     - uses: actions/checkout@v2
     - uses: aws-actions/configure-aws-credentials@v1
       with:
