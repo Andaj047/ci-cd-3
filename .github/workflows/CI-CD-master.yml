@@ -45,7 +45,7 @@ jobs:
         uses: montudor/action-zip@v1
         
       - name: Create Zip File
-        run: zip -r blank-csharp.zip ./src
+        run: zip -r blank-csharp.zip ./ci-cd-3
 
       - name: Upload to S3
         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
