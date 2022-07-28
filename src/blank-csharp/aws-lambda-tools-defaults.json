@@ -9,7 +9,7 @@
   ],
 
   "profile":"default",
-  "region" : "us-east-2",
+  "region" : "us-east-1",
   "configuration" : "Release",
   "framework" : "netcoreapp3.1",
   "function-runtime":"dotnetcore3.1",
