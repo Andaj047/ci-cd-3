@@ -53,7 +53,7 @@ jobs:
         run: zip -r blank-csharp.zip ./src
 
       - name: s3 bucket list
-        run: aws s3api list-buckets
+        run: aws s3api list-buckets --query "Buckets[].Name"
         
       - name: Upload to S3
         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
