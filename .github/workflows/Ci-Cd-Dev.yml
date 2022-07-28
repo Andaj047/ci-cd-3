@@ -4,6 +4,7 @@ on:
   push:
     branches:    
       - Dev
+      
 env:
   applicationfolder: 'src/blank-csharp'
   AWS_REGION: us-east-1
