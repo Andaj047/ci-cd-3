@@ -33,6 +33,10 @@ jobs:
         working-directory: './src/blank-csharp'
         run: dotnet build -c debug --no-restore
 
+      - name: Test
+        working-directory: './src/blank-csharp'
+        run: dotnet test --no-restore --verbosity normal
+        
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: ${{env.AWS_REGION}}
