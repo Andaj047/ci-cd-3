@@ -1,7 +1,9 @@
 name: Build and deploy in prod
 
-on: 
-  workflow_dispatch: {}
+on:
+  push:
+    branches:    
+      - master
 env:
   AWS_REGION: us-east-1
   AWS_S3_BUCKET: git-action-ci-cd-build
