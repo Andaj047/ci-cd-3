@@ -1,7 +1,9 @@
-name: Build and deploy in test
+name: Build and deploy in QA
 
-on: 
-  workflow_dispatch: {}
+on:
+  push:
+    branches:    
+      - Master
 env:
   applicationfolder: 'src/blank-csharp'
   AWS_REGION: us-east-1
@@ -33,12 +35,16 @@ jobs:
       - name: Build
         working-directory: './src/blank-csharp'
         run: dotnet build -c debug --no-restore
+        
+      - name: Test
+        working-directory: './src/blank-csharp'
+        run: dotnet test --no-restore --verbosity normal
 
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: ${{env.AWS_REGION}}
-          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ secrets.QA_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.QA_AWS_SECRET_ACCESS_KEY_ID }}
 
 #       - name: chmod
 #         run: chmod -R +x ./.github
@@ -67,8 +73,8 @@ jobs:
   #           role-to-assume: arn:aws:iam::967774776559:role/github-action-access-role
   #           role-session-name: development
   #           aws-s3-bucket: ${{ env.AWS_S3_BUCKET }}
-            aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY_ID }}
+            aws-access-key-id: ${{ secrets.QA_AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.QA_AWS_SECRET_ACCESS_KEY_ID }}
       - run: aws lambda update-function-code --function-name git-test-function --s3-bucket ${{ env.AWS_S3_BUCKET }} --s3-key blank-csharp.zip
 
       - name: Sleep for 5 seconds

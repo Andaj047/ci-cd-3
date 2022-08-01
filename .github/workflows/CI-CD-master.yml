@@ -1,7 +1,9 @@
 name: Build and deploy in prod
 
-on: 
-  workflow_dispatch: {}
+on:
+  push:
+    branches:    
+      - master
 env:
   AWS_REGION: us-east-1
   AWS_S3_BUCKET: git-action-ci-cd-build
@@ -33,6 +35,10 @@ jobs:
         working-directory: './src/blank-csharp'
         run: dotnet build -c debug --no-restore
 
+      - name: Test
+        working-directory: './src/blank-csharp'
+        run: dotnet test --no-restore --verbosity normal
+        
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: ${{env.AWS_REGION}}
@@ -53,6 +59,7 @@ jobs:
         
   deploy:
       needs: build
+      if: github.ref == 'refs/heads/master'
       runs-on: ubuntu-18.04
       environment: Prod
       permissions:
