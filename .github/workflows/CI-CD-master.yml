@@ -43,7 +43,7 @@ jobs:
         with:
           aws-region: ${{env.AWS_REGION}}
           aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
 
 #       - name: chmod
 #         run: chmod -R +x ./.github
@@ -80,7 +80,7 @@ jobs:
   #           role-session-name: development
   #           aws-s3-bucket: ${{ env.AWS_S3_BUCKET }}
             aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
       - run: aws lambda update-function-code --function-name git-test-function --s3-bucket ${{ env.AWS_S3_BUCKET }} --s3-key blank-csharp.zip
 
       - name: Sleep for 5 seconds
