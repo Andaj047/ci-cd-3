@@ -1,7 +1,9 @@
-name: Build and deploy in test
+name: Build and deploy in QA
 
-on: 
-  workflow_dispatch: {}
+on:
+  push:
+    branches:    
+      - Master
 env:
   applicationfolder: 'src/blank-csharp'
   AWS_REGION: us-east-1
