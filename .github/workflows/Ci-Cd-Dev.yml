@@ -65,6 +65,7 @@ jobs:
         
   deploy:
     needs: build
+    if: github.ref == 'refs/heads/Dev'
     runs-on: ubuntu-18.04
     environment: Dev
     permissions:
