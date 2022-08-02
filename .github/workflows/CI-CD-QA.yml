@@ -3,7 +3,7 @@ name: Build and deploy in QA
 on:
   pull_request:
     branches:    
-      - Master
+      - Dev
 env:
   applicationfolder: 'src/blank-csharp'
   AWS_REGION: us-east-1
