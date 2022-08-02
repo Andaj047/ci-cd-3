@@ -67,7 +67,7 @@ jobs:
         id-token: write
         contents: read
       steps:
-      - uses: Andaj047/ci-cd-3@v1
+      - uses: trstringer/manual-approval@v1
         with:
           approvers: Andaj047
           time: '1200s'
