@@ -58,11 +58,8 @@ jobs:
         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
         
   deploy:
+      if: ${{ github.event_name == 'workflow_dispatch' && github.ref_name == 'master'}}
       needs: build
-#       if: github.ref == 'refs/heads/master'
-      concurrency: 
-        group: Prod
-        cancel-in-progress: true
       runs-on: ubuntu-18.04
       environment: Prod
       permissions:
