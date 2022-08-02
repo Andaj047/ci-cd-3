@@ -13,6 +13,7 @@ jobs:
   build:
     name: Build and Package
     runs-on: ubuntu-18.04
+    environment: QA
     permissions:
       id-token: write
       contents: read
@@ -65,13 +66,15 @@ jobs:
         id-token: write
         contents: read
       steps:
+      - uses: Andaj047/ci-cd-3@v1
+        with:
+          approvers: Andaj047
+          time: '1200s'
+      
       - uses: actions/checkout@v2
       - uses: aws-actions/configure-aws-credentials@v1
         with:
             aws-region: ${{env.AWS_REGION}}
-  #           role-to-assume: arn:aws:iam::967774776559:role/github-action-access-role
-  #           role-session-name: development
-  #           aws-s3-bucket: ${{ env.AWS_S3_BUCKET }}
             aws-access-key-id: ${{ secrets.QA_AWS_ACCESS_KEY_ID }}
             aws-secret-access-key: ${{ secrets.QA_AWS_SECRET_ACCESS_KEY_ID }}
       - run: aws lambda update-function-code --function-name git-test-function-QA --s3-bucket ${{ env.AWS_S3_BUCKET }} --s3-key blank-csharp.zip
