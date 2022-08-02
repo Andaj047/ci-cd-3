@@ -7,7 +7,7 @@ on:
 env:
   applicationfolder: 'src/blank-csharp'
   AWS_REGION: us-east-1
-  AWS_S3_BUCKET: git-action-ci-cd-build
+  AWS_S3_BUCKET: git-action-ci-cd-build-qa
 
 jobs:
   build:
@@ -57,8 +57,18 @@ jobs:
 
       - name: Upload to S3
         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
-        
+    
+# on:
+#   push:
+#     branches:    
+#       - Master
+      
   deploy:
+#       if: 
+#         Workflow_dispatch:{}
+      concurrency: 
+        group: QA
+        cancel-in-progress: true
       needs: build
       runs-on: ubuntu-18.04
       environment: QA
@@ -75,11 +85,11 @@ jobs:
   #           aws-s3-bucket: ${{ env.AWS_S3_BUCKET }}
             aws-access-key-id: ${{ secrets.QA_AWS_ACCESS_KEY_ID }}
             aws-secret-access-key: ${{ secrets.QA_AWS_SECRET_ACCESS_KEY_ID }}
-      - run: aws lambda update-function-code --function-name git-test-function --s3-bucket ${{ env.AWS_S3_BUCKET }} --s3-key blank-csharp.zip
+      - run: aws lambda update-function-code --function-name git-test-function-QA --s3-bucket ${{ env.AWS_S3_BUCKET }} --s3-key blank-csharp.zip
 
       - name: Sleep for 5 seconds
         run: sleep 5s
         shell: bash
 
       - name: Release lambda function version
-        run: aws lambda publish-version --function-name git-test-function --description ${{ github.run_id }}
+        run: aws lambda publish-version --function-name git-test-function-QA --description ${{ github.run_id }}
