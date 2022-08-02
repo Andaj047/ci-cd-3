@@ -58,11 +58,6 @@ jobs:
       - name: Upload to S3
         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
     
-# on:
-#   push:
-#     branches:    
-#       - Master
-      
   deploy:
 #       if: 
 #         Workflow_dispatch:{}
