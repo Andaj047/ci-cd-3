@@ -1,9 +1,9 @@
 name: Build and deploy in QA
 
 on:
-  pull_request:
+  push:
     branches:    
-      - Dev
+      - master
 env:
   applicationfolder: 'src/blank-csharp'
   AWS_REGION: us-east-1
@@ -13,7 +13,6 @@ jobs:
   build:
     name: Build and Package
     runs-on: ubuntu-18.04
-    environment: QA
     permissions:
       id-token: write
       contents: read
@@ -59,11 +58,6 @@ jobs:
         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
     
   deploy:
-#       if: 
-#         Workflow_dispatch:{}
-      concurrency: 
-        group: QA
-        cancel-in-progress: true
       needs: build
       runs-on: ubuntu-18.04
       environment: QA
