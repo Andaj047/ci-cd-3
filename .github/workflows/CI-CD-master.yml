@@ -58,7 +58,7 @@ jobs:
         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
         
   deploy:
-      if: ${{ github.event_name == 'workflow_dispatch' && github.ref_name == 'master'}}
+#       if: ${{ github.event_name == 'workflow_dispatch' && github.ref_name == 'master'}}
       needs: build
       runs-on: ubuntu-18.04
       environment: Prod
@@ -66,6 +66,9 @@ jobs:
         id-token: write
         contents: read
       steps:
+      - name: daf
+        run: gh workflow disable workflow
+        
       - name: current location
         run: pwd
         
