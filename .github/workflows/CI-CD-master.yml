@@ -65,8 +65,8 @@ jobs:
         id-token: write
         contents: read
       steps:
-      - name: daf
-        run: gh workflow disable workflow
+#       - name: daf
+#         run: gh workflow disable workflow
         
       - name: current location
         run: pwd
