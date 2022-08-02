@@ -59,7 +59,10 @@ jobs:
         
   deploy:
       needs: build
-      if: github.ref == 'refs/heads/master'
+#       if: github.ref == 'refs/heads/master'
+      concurrency: 
+        group: Prod
+        cancel-in-progress: true
       runs-on: ubuntu-18.04
       environment: Prod
       permissions:
