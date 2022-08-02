@@ -12,7 +12,6 @@ jobs:
   build:
     name: Build and Package
     runs-on: ubuntu-18.04
-    environment: Prod
     permissions:
       id-token: write
       contents: read
