@@ -1,7 +1,7 @@
 name: Build and deploy in QA
 
 on:
-  push:
+  pull_request:
     branches:    
       - Master
 env:
