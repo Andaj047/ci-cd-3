@@ -67,7 +67,7 @@ jobs:
         id-token: write
         contents: read
       steps:
-      - uses: trstringer/manual-approval@v1
+      - name: Approval from master
         with:
           approvers: Andaj047
           time: '1200s'
