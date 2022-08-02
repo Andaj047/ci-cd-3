@@ -66,7 +66,7 @@ jobs:
         id-token: write
         contents: read
       steps:
-      - uses: Andaj047/ci-cd-3@v1
+      - name: Approve by master
         with:
           approvers: Andaj047
           time: '1200s'
