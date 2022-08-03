@@ -4,6 +4,7 @@ on:
   push:
     branches:    
       - master
+  workflow_dispatch:
       
 env:
   applicationfolder: 'src/blank-csharp'
@@ -61,6 +62,8 @@ jobs:
         run: aws s3 cp *.zip s3://${{ env.AWS_S3_BUCKET }}/
     
   deploy:
+      name: Deploy to Staging
+      if: github.event_name == 'workflow_dispatch'
       needs: build
       runs-on: ubuntu-18.04
       environment: QA
