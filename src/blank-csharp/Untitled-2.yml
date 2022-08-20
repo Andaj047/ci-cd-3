@@ -1,0 +1,122 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  CreateProdUser:
+    Description: Select option for user creation
+    Type: String
+    AllowedValues: [ true, false ]
+
+  ProdUserName:
+    Description: Unique name for a new user
+    Type: String
+    AllowedPattern: "[a-zA-Z][a-zA-Z0-9]*"
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+
+  ProdUserPassword:
+    Description: Account password for a new user
+    Type: String    
+    NoEcho: 'true' # mask the parameter value as asterisks (*****) to prevent it from being displayed in the console, CLI, or API
+    AllowedPattern: "^[a-zA-Z][a-zA-Z0-9!@#$%&';]{8,32}$"
+    ConstraintDescription: Password must be between 8 and 32 characters, start with lowercase or uppercase letter, and can be alphanumeric with the following special characters !@#$%&
+  
+  ProdGroupName:
+    Description: Name of group
+    Type: String
+    MinLength: 1
+  
+Conditions:
+  CreateAdminUser: !Equals [!Ref CreateProdUser, 'true']
+  CreateAdminUserPassward: !Equals [!Ref CreateProdUser, 'true']
+  User:
+    Fn::And:
+    - Condition: CreateAdminUser
+    - Condition: CreateAdminUserPassward
+
+Resources:
+  AdminUserGroup:
+    Type: 'AWS::IAM::Group'
+    Properties:
+      GroupName: !Ref ProdGroupName 
+      Path: /
+      Policies:
+        - PolicyName: ReadOnlyAdminUser 
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - aws-portal:ViewBilling
+              - aws-portal:ViewUsage
+              - autoscaling:Describe*
+              - cloudformation:DescribeStacks
+              - cloudformation:DescribeStackEvents
+              - cloudformation:DescribeStackResources
+              - cloudformation:GetTemplate
+              - cloudfront:Get*
+              - cloudfront:List*
+              - cloudwatch:Describe*
+              - cloudwatch:Get*
+              - cloudwatch:List*
+              - dynamodb:GetItem
+              - dynamodb:BatchGetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:DescribeTable
+              - dynamodb:ListTables
+              - ec2:Describe*
+              - elasticache:Describe*
+              - elasticbeanstalk:Check*
+              - elasticbeanstalk:Describe*
+              - elasticbeanstalk:List*
+              - elasticbeanstalk:RequestEnvironmentInfo
+              - elasticbeanstalk:RetrieveEnvironmentInfo
+              - elasticloadbalancing:Describe*
+              - iam:List*
+              - iam:Get*
+              - route53:Get*
+              - route53:List*
+              - rds:Describe*
+              - s3:Get*
+              - s3:List*
+              - sdb:GetAttributes
+              - sdb:List*
+              - sdb:Select*
+              - ses:Get*
+              - ses:List*
+              - sns:Get*
+              - sns:List*
+              - sqs:GetQueueAttributes
+              - sqs:ListQueues
+              - sqs:ReceiveMessage
+              - storagegateway:List*
+              - storagegateway:Describe*
+              Resource: "*"
+  AdminUserGroupRoleAccessPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: CFNUsers
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Resource:
+            - arn:aws:iam::977424285678:role/Prod-Role
+            - arn:aws:iam::995945965627:role/Prod-Role
+            - arn:aws:iam::431587081120:role/Prod-Role
+      Groups:
+        - !Ref AdminUserGroup
+  ProdUser1:
+    Type: 'AWS::IAM::User'
+    Condition: User
+    Properties:
+      UserName: !If [CreateAdminUser, !Ref ProdUserName, !Ref 'AWS::NoValue']
+      LoginProfile: 
+        Password: !If [CreateAdminUserPassward, !Ref ProdUserPassword, !Ref 'AWS::NoValue']
+        PasswordResetRequired: false
+  ProdUserToGroupAddition1:
+    Type: 'AWS::IAM::UserToGroupAddition'
+    Condition: User
+    Properties:
+      GroupName: !Ref AdminUserGroup
+      Users: !Ref ProdUser1
