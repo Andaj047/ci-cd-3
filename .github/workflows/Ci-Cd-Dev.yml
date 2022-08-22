@@ -54,7 +54,7 @@ jobs:
         uses: montudor/action-zip@v1
         
       - name: Create Zip File
-        run: zip -r blank-csharp.zip ./src
+        run: zip -r blank-csharp-${{ github.run_id }}.zip ./src
 
       - name: s3 bucket list
         run: aws s3 ls
